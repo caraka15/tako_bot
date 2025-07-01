@@ -8,6 +8,7 @@ This bot automates the process of depositing and withdrawing assets to a specifi
 
     ```bash
     git clone https://github.com/caraka15/tako_bot
+    cd tako_bot
     ```
 
 2.  **Install dependencies:**
