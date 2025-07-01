@@ -1,0 +1,9 @@
+{
+    "rpc_url": "https://rpc.taiko.xyz",
+    "contract_address": "0x3A2Fd8a16030fFa8D66E47C3f1C0507c673C841e",
+    "address_asset": "0xA9d23408b9bA935c230493c40C73824Df71A0975",
+    "amount": "0.5",
+    "gas_price_gwei": "0.1",
+    "gas_limit": 600000,
+    "iterations": 5
+}
