@@ -15,6 +15,11 @@ const gasPrice = ethers.parseUnits(config.gas_price_gwei, 'gwei');
 const gasLimit = config.gas_limit;
 const maxAmount = ethers.MaxUint256;
 
+// --- delay iteration ---
+const delaySeconds = Number(config.delay_seconds ?? 0);
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+
 // --- Helper for structured logging ---
 const log = (level, message) => {
   console.log(`[${new Date().toISOString()}] [${level.toUpperCase()}] ${message}`);
@@ -80,25 +85,32 @@ async function withdraw() {
 }
 
 async function main() {
-    log('info', 'Bot starting...');
-    for (let i = 1; i <= config.iterations; i++) {
-        console.log(`\n==================== ITERATION ${i} of ${config.iterations} ====================`);
-        const depositSuccessful = await deposit();
+  log('info', 'Bot starting...');
+  for (let i = 1; i <= config.iterations; i++) {
+    console.log(`\n==================== ITERATION ${i} of ${config.iterations} ====================`);
+    const depositSuccessful = await deposit();
 
-        if (depositSuccessful) {
-            log('info', 'Deposit successful. Proceeding to withdraw.');
-            const withdrawSuccessful = await withdraw();
-            if (withdrawSuccessful) {
-                log('info', 'Withdrawal successful.');
-            } else {
-                log('warn', 'Withdrawal failed. Continuing to next iteration.');
-            }
-        } else {
-            log('warn', 'Deposit failed. Skipping withdrawal and continuing to next iteration.');
-        }
-        console.log(`==================== ITERATION ${i} FINISHED ====================\n`);
+    if (depositSuccessful) {
+      log('info', 'Deposit successful. Proceeding to withdraw.');
+      const withdrawSuccessful = await withdraw();
+      if (withdrawSuccessful) {
+        log('info', 'Withdrawal successful.');
+      } else {
+        log('warn', 'Withdrawal failed. Continuing to next iteration.');
+      }
+    } else {
+      log('warn', 'Deposit failed. Skipping withdrawal and continuing to next iteration.');
     }
-    log('info', 'All iterations completed. Bot shutting down.');
+    console.log(`==================== ITERATION ${i} FINISHED ====================\n`);
+
+    if (i < config.iterations && delaySeconds > 0 && Number.isFinite(delaySeconds)) {
+      log('info', `Waiting ${delaySeconds} second(s) before next iteration...`);
+      await sleep(delaySeconds * 1000);
+    }
+
+  }
+  log('info', 'All iterations completed. Bot shutting down.');
+
 }
 
 main();
